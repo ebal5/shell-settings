@@ -1,0 +1,19 @@
+
+DIRNAME="$HOME/bin"
+[[ -d  $DIRNAME ]] && export PATH="${DIRNAME}:${PATH}"
+
+alias ls="ls --color=auto"
+alias grep="grep --color=auto"
+
+alias ll="ls -l"
+alias la="ls -la"
+alias lh="ls -lh"
+alias l="ls"
+alias c="cd"
+alias m="man"
+alias g="git"
+alias e="echo"
+
+function speedmeter {
+      cat - |sed -e "s/^.*時間： \(.*:..\).*$/\1 /" -e "s/^.[^0-9]*\([0-9]*[km]bps\).$/\1 /" -e "s/^-*//" -e "/^$/d" | perl -pe "s/\n/ /" |perl -pe "s/$/\n/" | sed -e "s/ \+/ /g"
+}
