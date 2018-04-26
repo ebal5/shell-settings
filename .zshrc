@@ -1,6 +1,33 @@
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/eval/.sdkman"
-[[ -s "/home/eval/.sdkman/bin/sdkman-init.sh" ]] && source "/home/eval/.sdkman/bin/sdkman-init.sh"
+fzf -h 2> /dev/null
+if [ $? -eq 0 ]; then
+    if [[ ! $- == *l* ]] ; then
+	choices="New session with name\nNew session\nPlain"
+	sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
+	if [ ! -z $sessions ]; then
+	    choices="$choices\n$sessions"
+	fi
+	choise=$(echo $choices | fzf)
+	case $choise in
+	    "Plain")
+		;;
+	    "New session")
+		tmux new
+		;;
+	    "New session with name")
+		printf "Name: "
+		read name
+		tmux new -t $name
+		;;
+	    ?*)
+		tmux a -t $choise
+		;;
+	    *)
+		;;
+	esac
+    fi
+fi
+
+
 
 [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
 
@@ -175,3 +202,7 @@ alias zmv='noglob zmv -w'
 
 autoload -Uz zed
 
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && 
+source "${HOME}/.sdkman/bin/sdkman-init.sh"
