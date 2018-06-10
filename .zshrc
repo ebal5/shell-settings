@@ -69,6 +69,10 @@ abbreviations=(
     "@h"	'| head'
     "@w"	'| wc'
     "@a"	'| awk'
+    "@j"	'| jq'
+    "@r"	'| rg'
+    "@cp"	'| xsel -b'
+    "@c"	'| cut'
 )
 magic-abbrev-expand() {
     local MATCH
