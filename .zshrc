@@ -1,6 +1,6 @@
 fzf -h 2> /dev/null
 if [ $? -eq 0 ]; then
-    if [[ ! $- == *l* ]] ; then
+    if [[ ! -n $TMUX && $- == *l* ]] ; then
 	choices="New session with name\nNew session\nPlain"
 	sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
 	if [ ! -z $sessions ]; then
@@ -27,9 +27,7 @@ if [ $? -eq 0 ]; then
     fi
 fi
 
-
-
-[[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
+# [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
 
 bindkey -e			# Use emacs-like key bind
 
@@ -61,6 +59,7 @@ setopt extended_glob
 typeset -A abbreviations
 abbreviations=(
     "@g"	'| grep'
+    "@gc"	'| grep --color=always'
     "@l"	'| less'
     "@x"	'| xargs'
     "@s"	'| sed -e'
@@ -68,9 +67,12 @@ abbreviations=(
     "@t"	'| tail'
     "@h"	'| head'
     "@w"	'| wc'
+    "@wl"	'| wc -l'
     "@a"	'| awk'
     "@j"	'| jq'
+    "@jc"	'| jq -C'
     "@r"	'| rg'
+    "@rc"	'| rg --color=always'
     "@cp"	'| xsel -b'
     "@c"	'| cut'
 )
@@ -187,7 +189,7 @@ fi
 
 PROMPT="%{$fg[green]%}%n%{$reset_color%}@%m: %{$fg[cyan]%}%~%{$reset_color%}
 %{$fg[green]%}>%{$reset_color%} "
-echo -ne "\033]0;${USER}@${HOST} (*･ω･*)\007"
+echo -ne "\033]0;${USER}@${HOST} (*'v'*)\007"
 precmd() {
     vcs_info
     local pd
@@ -208,5 +210,4 @@ autoload -Uz zed
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && 
-source "${HOME}/.sdkman/bin/sdkman-init.sh"
+[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
