@@ -23,7 +23,7 @@ function speedmeter {
 
 [[ -d "$HOME/.texmf" ]] && export TEXMFHOME="$HOME/.texmf"
 
-[[ -d "$HOME/.rbenv/bin:$PATH" ]] && export PATH="$HOME/.rbenv/bin:$PATH"; eval "$(rbenv init -)"
+[[ -d "$HOME/.rbenv/bin" ]] && export PATH="$HOME/.rbenv/bin:$PATH"; eval "$(rbenv init -)"
 
 export LESS=-R
 export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
