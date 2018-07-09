@@ -36,7 +36,7 @@ if [ $? -eq 0 ]; then
         local line=${1%%$'\n'}
         local cmd=${line%% *}
         if [ ${line} = 'exec ${SHELL}' -o $line = 'exec $SHELL' ] ; then
-            if [ -f $dirfile]; then
+            if [ -f $dirfile ]; then
                 rm $dirfile
             fi
         fi
