@@ -43,7 +43,7 @@ if [ $? -eq 0 ]; then
     }
     autoload -Uz add-zsh-hook
     add-zsh-hook chpwd __chpwd_savepath
-    function tcd() {
+    function cdt() {
         if [ $# -eq 1 ] ; then
             cd $1
             return
