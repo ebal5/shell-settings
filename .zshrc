@@ -1,33 +1,63 @@
+dirfile=$(mktemp -p /tmp tmuxdir.XXXXX)
 fzf -h 2> /dev/null
 if [ $? -eq 0 ]; then
     if [[ ! -n $TMUX && $- == *l* ]] ; then
-	choices="New session with name\nNew session\nPlain"
-	sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
-	if [ ! -z $sessions ]; then
-	    choices="$choices\n$sessions"
-	fi
-	choise=$(echo $choices | fzf)
-	case $choise in
-	    "Plain")
-		;;
-	    "New session")
-		tmux new
-		;;
-	    "New session with name")
-		printf "Name: "
-		read name
-		tmux new -t $name
-		;;
-	    ?*)
-		tmux a -t $choise
-		;;
-	    *)
-		;;
-	esac
+	    choices="New session with name\nNew session\nPlain"
+	    sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
+	    if [ ! -z $sessions ]; then
+	        choices="$choices\n$sessions"
+	    fi
+	    choise=$(echo $choices | fzf)
+	    case $choise in
+	        "Plain")
+		    ;;
+	        "New session")
+		        tmux new
+		        ;;
+	        "New session with name")
+		        printf "Name: "
+		        read name
+		        tmux new -t $name
+		        ;;
+	        ?*)
+		        tmux a -t $choise
+		        ;;
+	        *)
+		        ;;
+	    esac
     fi
+    function __chpwd_savepath() {
+        $(pwd > $dirfile)
+    }
+    function __exit_rmpath() {
+        rm $dirfile
+    }
+    preexec() {
+        local line=${1%%$'\n'}
+        local cmd=${line%% *}
+        if [ ${line} = 'exec ${SHELL}' -o $line = 'exec $SHELL' ] ; then
+            if [ -f $dirfile]; then
+                rm $dirfile
+            fi
+        fi
+    }
+    autoload -Uz add-zsh-hook
+    add-zsh-hook chpwd __chpwd_savepath
+    function tcd() {
+        if [ $# -eq 1 ] ; then
+            cd $1
+            return
+        elif [ ! $# -eq 0 ] ; then
+            >&2 echo "too many arguments"
+            return 1
+        fi
+        dlist=$(cat /tmp/tmuxdir* | sort | uniq | grep -vEw "^$(pwd)$")
+        d=$(echo $dlist | fzf)
+        cd $d
+    }
 fi
 
-# [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
+[[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
 
 bindkey -e			# Use emacs-like key bind
 
