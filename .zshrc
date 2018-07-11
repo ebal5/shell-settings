@@ -55,6 +55,15 @@ if [ $? -eq 0 ]; then
         d=$(echo $dlist | fzf)
         cd $d
     }
+    function cdf() {
+        choise=$(cdr -l | sed -e "s/^..*  *//" | sort | uniq | fzf)
+        hs=$(echo $choise | grep -oE "~[a-zA-Z]+" | tr -d "~")
+        for h in ${hs}; do
+            rep=$(hash -d | grep -E "^${h}=" | cut -d "=" -f 2)
+            choise=${choise/"~${h}"/${rep}}
+        done
+        cd $choise
+    }
 fi
 
 [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
@@ -212,20 +221,25 @@ zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
 zstyle ':vcs_info:*' formats "%F{green}%c%u[%b]%f"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 setopt PROMPT_SUBST     # allow funky stuff in prompt
-color="cyan"
+color="080"
+hcolor="033"
+if [ ! -z $SSH_CLIENT -o ! -z $SSH_CONNECTION ]; then
+    color="220"
+    hcolor="222"
+fi
 if [ "$USER" = "root" ]; then
-    color="red"         # root is red, user is blue
+    color="124"         # root is red, user is blue
 fi
 
-PROMPT="%{$fg[green]%}%n%{$reset_color%}@%m: %{$fg[cyan]%}%~%{$reset_color%}
-%{$fg[green]%}>%{$reset_color%} "
+PROMPT="%F{$color}%n%f@%F{$hcolor}%m%f: %F{014}$pd%f
+%F{040}>%f "
 echo -ne "\033]0;${USER}@${HOST} (*'v'*)\007"
 precmd() {
     vcs_info
     local pd
     pd=$(pwd | sed -e "s|${HOME}|~|" -e "s|\([^~/]\)[^/]*/|\1/|g")
-    PROMPT="%{$fg[$color]%}%n%{$reset_color%}@%m: %{$fg[cyan]%}$pd%{$reset_color%}
-%{%(?.$fg[green].$fg[red])%}%(?.(*'v'*%) >.(-_-##%) >)%{$reset_color%} "
+    PROMPT="%F{014}%n%f@%F{$hcolor}%m%f: %F{014}$pd%f
+%{%(?.%F{040}.%F{124})%}%(?.(*'v'*%) >.(-_-##%) >)%f "
     RPROMPT="${vcs_info_msg_0_}"
 }
 
