@@ -1,30 +1,70 @@
+dirfile=$(mktemp -p /tmp tmuxdir.XXXXX)
 fzf -h 2> /dev/null
 if [ $? -eq 0 ]; then
-    if [[ ! -n $TMUX && ! $- == *l* ]] ; then
-	choices="New session with name\nNew session\nPlain"
-	sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
-	if [ ! -z $sessions ]; then
-	    choices="$choices\n$sessions"
-	fi
-	choise=$(echo $choices | fzf)
-	case $choise in
-	    "Plain")
-		;;
-	    "New session")
-		tmux new
-		;;
-	    "New session with name")
-		printf "Name: "
-		read name
-		tmux new -t $name
-		;;
-	    ?*)
-		tmux a -t $choise
-		;;
-	    *)
-		;;
-	esac
+    if [[ ! -n $TMUX && $- == *l* ]] ; then
+	    choices="New session with name\nNew session\nPlain"
+	    sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
+	    if [ ! -z $sessions ]; then
+	        choices="$choices\n$sessions"
+	    fi
+	    choise=$(echo $choices | fzf)
+	    case $choise in
+	        "Plain")
+		    ;;
+	        "New session")
+		        tmux new
+		        ;;
+	        "New session with name")
+		        printf "Name: "
+		        read name
+		        tmux new -t $name
+		        ;;
+	        ?*)
+		        tmux a -t $choise
+		        ;;
+	        *)
+		        ;;
+	    esac
     fi
+    function __chpwd_savepath() {
+        $(pwd > $dirfile)
+    }
+    function __exit_rmpath() {
+        rm $dirfile
+    }
+    preexec() {
+        local line=${1%%$'\n'}
+        local cmd=${line%% *}
+        if [ ${line} = 'exec ${SHELL}' -o $line = 'exec $SHELL' ] ; then
+            if [ -f $dirfile ]; then
+                rm $dirfile
+            fi
+        fi
+    }
+    autoload -Uz add-zsh-hook
+    add-zsh-hook chpwd __chpwd_savepath
+    function cdt() {
+        if [ $# -eq 1 ] ; then
+            cd $1
+            return
+        elif [ ! $# -eq 0 ] ; then
+            >&2 echo "too many arguments"
+            return 1
+        fi
+        dlist=$(cat /tmp/tmuxdir* | sort | uniq | grep -vEw "^$(pwd)$")
+        d=$(echo $dlist | fzf)
+        cd $d
+    }
+    function cdf() {
+        choise=$(cdr -l | sed -e "s/^..*  *//" | sort | uniq | fzf)
+        hs=$(echo $choise | grep -oE "~[a-zA-Z]+" | tr -d "~")
+        for h in ${hs}; do
+            rep=$(hash -d | grep -E "^${h}=" | cut -d "=" -f 2)
+            choise=${choise/"~${h}"/${rep}}
+        done
+        choise=$(echo $choise | sed -e "s!^~/!${HOME}/!")
+        cd $choise
+    }
 fi
 
 [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
@@ -182,20 +222,25 @@ zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
 zstyle ':vcs_info:*' formats "%F{green}%c%u[%b]%f"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 setopt PROMPT_SUBST     # allow funky stuff in prompt
-color="cyan"
+color="080"
+hcolor="033"
+if [ ! -z $SSH_CLIENT -o ! -z $SSH_CONNECTION ]; then
+    color="220"
+    hcolor="222"
+fi
 if [ "$USER" = "root" ]; then
-    color="red"         # root is red, user is blue
+    color="124"         # root is red, user is blue
 fi
 
-PROMPT="%{$fg[green]%}%n%{$reset_color%}@%m: %{$fg[cyan]%}%~%{$reset_color%}
-%{$fg[green]%}>%{$reset_color%} "
+PROMPT="%F{$color}%n%f@%F{$hcolor}%m%f: %F{014}$pd%f
+%F{040}>%f "
 echo -ne "\033]0;${USER}@${HOST} (*'v'*)\007"
 precmd() {
     vcs_info
     local pd
     pd=$(pwd | sed -e "s|${HOME}|~|" -e "s|\([^~/]\)[^/]*/|\1/|g")
-    PROMPT="%{$fg[$color]%}%n%{$reset_color%}@%m: %{$fg[cyan]%}$pd%{$reset_color%}
-%{%(?.$fg[green].$fg[red])%}%(?.(*'v'*%) >.(-_-##%) >)%{$reset_color%} "
+    PROMPT="%F{014}%n%f@%F{$hcolor}%m%f: %F{014}$pd%f
+%{%(?.%F{040}.%F{124})%}%(?.(*'v'*%) >.(-_-##%) >)%f "
     RPROMPT="${vcs_info_msg_0_}"
 }
 
