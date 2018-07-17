@@ -27,7 +27,7 @@ if [ $? -eq 0 ]; then
     fi
 fi
 
-# [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
+[[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
 
 bindkey -e			# Use emacs-like key bind
 
