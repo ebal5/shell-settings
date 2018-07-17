@@ -62,6 +62,7 @@ if [ $? -eq 0 ]; then
             rep=$(hash -d | grep -E "^${h}=" | cut -d "=" -f 2)
             choise=${choise/"~${h}"/${rep}}
         done
+        choise=$(echo $choise | sed -e "s!^~/!${HOME}/!")
         cd $choise
     }
 fi
