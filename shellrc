@@ -49,9 +49,11 @@ function gdrive_dl(){
     # $2: file name that you want to save to
     if [[ ! $@ -eq 2 ]]; then
         echo "Usage: gdrive_dl drive_url save_file_name"
+        exit 1
     fi
     if [[ ! $1 -regex-match ^https://drive.google.com/.+ ]]; then
         echo "first arugment must be google drive's url"
+        exit 1
     fi
     FID=$(echo $1 | sed -E 's/.*id=(.+)[&|$].*/\1/')
     FN=$2
