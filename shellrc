@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+#+STARTUP: shell-script-mode
 
 DIRNAME="$HOME/bin"
 [[ -d  $DIRNAME ]] && export PATH="${DIRNAME}:${PATH}"
@@ -18,7 +20,7 @@ alias md="mkdir"
 alias less="less -F"
 
 function speedmeter {
-      cat - |sed -e "s/^.*時間： \(.*:..\).*$/\1 /" -e "s/^.[^0-9]*\([0-9]*[km]bps\).$/\1 /" -e "s/^-*//" -e "/^$/d" | perl -pe "s/\n/ /" |perl -pe "s/$/\n/" | sed -e "s/ \+/ /g"
+    cat - |sed -e "s/^.*時間： \(.*:..\).*$/\1 /" -e "s/^.[^0-9]*\([0-9]*[km]bps\).$/\1 /" -e "s/^-*//" -e "/^$/d" | perl -pe "s/\n/ /" |perl -pe "s/$/\n/" | sed -e "s/ \+/ /g"
 }
 
 [[ -d "$HOME/.texmf" ]] && export TEXMFHOME="$HOME/.texmf"
@@ -34,4 +36,30 @@ export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
+# User functions...
+
+if git --help > /dev/null; then
+    function ghome(){
+        git rev-parse --show-toplevel
+    }
+fi
+
+function gdrive_dl(){
+    # $1: url that want to download (only google drive)
+    # $2: file name that you want to save to
+    if [[ ! $@ -eq 2 ]]; then
+        echo "Usage: gdrive_dl drive_url save_file_name"
+    fi
+    if [[ ! $1 -regex-match ^https://drive.google.com/.+ ]]; then
+        echo "first arugment must be google drive's url"
+    fi
+    FID=$(echo $1 | sed -E 's/.*id=(.+)[&|$].*/\1/')
+    FN=$2
+    cookie=$(mktemp /tmp/cookie.XXXXXX)
+    curl -sc $cookie "https://drive.google.com/uc?export=download&id=$FID" > /dev/null
+    CODE="$(awk '/_warning_/ {print $NF}' ${cookie})"
+    curl -Lb $cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=$FID" -o $FN
+}
+
 [[ -f "$HOME/.config/shellrc.local" ]] && source "$HOME/.config/shellrc.local"
+
