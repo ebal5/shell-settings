@@ -67,8 +67,6 @@ if [ $? -eq 0 ]; then
     }
 fi
 
-[[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
-
 bindkey -e			# Use emacs-like key bind
 
 # zplug settings
@@ -253,6 +251,9 @@ alias zmv='noglob zmv -w'
 
 autoload -Uz zed
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
+
+# load user settings
+
+[[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
