@@ -1,7 +1,7 @@
 dirfile=$(mktemp -p /tmp tmuxdir.XXXXX)
 fzf -h 2> /dev/null
 if [ $? -eq 0 ]; then
-    if [[ ! -n $TMUX && $- == *l* ]] ; then
+    if [[ ! -n $TMUX ]] ; then
 	    choices="New session with name\nNew session\nPlain"
 	    sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
 	    if [ ! -z $sessions ]; then
