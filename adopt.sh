@@ -11,3 +11,4 @@ dir=$(cd $(dirname $0); pwd)
 ln -s $dir/.zshrc $zrcpos
 ln -s $dir/.tmux.conf $trcpos
 ln -s $dir/shellrc $srcpos
+ln -s $dir/.latexmkrx $HOME/
