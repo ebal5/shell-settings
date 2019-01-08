@@ -63,5 +63,11 @@ function gdrive_dl(){
     curl -Lb $cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=$FID" -o $FN
 }
 
+function mcd(){
+    mkdir $1 && cd $1
+}
+
+# load local settings.
+
 [[ -f "$HOME/.config/shellrc.local" ]] && source "$HOME/.config/shellrc.local"
 

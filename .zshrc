@@ -257,3 +257,4 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # load user settings
 
 [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
+
