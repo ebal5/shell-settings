@@ -71,3 +71,8 @@ function mcd(){
 
 [[ -f "$HOME/.config/shellrc.local" ]] && source "$HOME/.config/shellrc.local"
 
+virtualenvfile=/usr/local/bin/virtualenvwrapper.sh
+[[ -f $virtuenvfile ]] && source $virtualenvfile && export WORKON_HOME=~/.virtualenvs
+
+PYENV_ROOT=$HOME/.pyenv
+[[ -d $PYENV_ROOT ]] && PATH="$PYENV_ROOT/shims:$PATH"
