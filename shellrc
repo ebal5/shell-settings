@@ -80,3 +80,7 @@ PYENV_ROOT=$HOME/.pyenv
 alias pipmd="env PIPENV_VENV_IN_PROJECT=true pipenv install -d"
 
 [[ -f "$HOME/.config/pythonstartup.py" ]] && export PYTHONSTARTUP="$HOME/.config/pythonstartup.py"
+
+if test pipenv --help; then
+    eval "$(pipenv --completion)"
+fi
