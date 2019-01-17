@@ -76,3 +76,7 @@ virtualenvfile=/usr/local/bin/virtualenvwrapper.sh
 
 PYENV_ROOT=$HOME/.pyenv
 [[ -d $PYENV_ROOT ]] && PATH="$PYENV_ROOT/shims:$PATH"
+
+alias pipmd="env PIPENV_VENV_IN_PROJECT=true pipenv install -d"
+
+[[ -f "$HOME/.config/pythonstartup.py" ]] && export PYTHONSTARTUP="$HOME/.config/pythonstartup.py"
