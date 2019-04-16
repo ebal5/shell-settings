@@ -4,7 +4,7 @@ zrcpos="$HOME/.zshrc"
 trcpos="$HOME/.tmux.conf"
 srcpos="$HOME/.config/shellrc"
 pystpos="$HOME/.config/pythonstartup.py"
-gitpos="$HOMOE/.gitconfig"
+gitpos="$HOME/.gitconfig"
 [[ -f $zrcpos ]] && mv $zrcpos ${zrcpos}.orig
 [[ -f $trcpos ]] && mv $trcpos ${trcpos}.orig
 [[ -f $srcpos ]] && mv $srcpos ${srcpos}.orig
