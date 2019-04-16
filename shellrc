@@ -92,3 +92,9 @@ if pipenv --help > /dev/null; then
     eval "$(pipenv --completion)"
 fi
 export XAPIAN_CJK_NGRAM=1
+
+if which xsv > /dev/null; then
+    function csvcp() {
+        cat $1 | xsv fmt -t "\t" | xsel -b
+    }
+fi
