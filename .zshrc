@@ -1,13 +1,25 @@
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 dirfile=$(mktemp -p /tmp tmuxdir.XXXXX)
-fzf -h 2> /dev/null
-if [ $? -eq 0 ]; then
+if fzf -h 2> /dev/null ; then
+	fuzzy=fzf
+	if gibo help > /dev/null 2>&1; then
+		function genignore() {
+			gibo dump $(gibo list | fzf --multi | tr "\n" " ") >> .gitignore
+		}
+	fi
+elif fzy -h 2> /dev/null ; then
+	fuzzy=fzy
+elif peco -h 2> /dev/null ; then
+	fuzzy=peco
+fi
+if [ ! -z $fuzzy ]; then
     if [[ ! -n $TMUX ]] ; then
 	    choices="New session with name\nNew session\nPlain"
 	    sessions=$(tmux ls -F "#{session_name}" 2> /dev/null | sort -r)
 	    if [ ! -z $sessions ]; then
 	        choices="$choices\n$sessions"
 	    fi
-	    choise=$(echo $choices | fzf)
+	    choise=$(echo $choices | $fuzzy)
 	    case $choise in
 	        "Plain")
 		    ;;
@@ -52,7 +64,7 @@ if [ $? -eq 0 ]; then
             return 1
         fi
         dlist=$(cat /tmp/tmuxdir* | sort | uniq | grep -vEw "^$(pwd)$")
-        d=$(echo $dlist | fzf)
+        d=$(echo $dlist | $fuzzy)
         cd $d
     }
     function cdf() {
@@ -254,7 +266,9 @@ autoload -Uz zed
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
 
+[ -d ~/.anyenv/bin ] && export PATH="$HOME/.anyenv/bin:$PATH" && \
+    eval "$(anyenv init -)"
+
 # load user settings
 
 [[ -f ~/.config/shellrc ]] && . ~/.config/shellrc
-
