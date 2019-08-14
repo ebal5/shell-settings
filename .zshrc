@@ -1,5 +1,7 @@
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 dirfile=$(mktemp -p /tmp tmuxdir.XXXXX)
+
+# definition of fuzzy method
 if fzf -h 2> /dev/null ; then
 	fuzzy=fzf
 	if gibo help > /dev/null 2>&1; then
@@ -12,6 +14,7 @@ elif fzy -h 2> /dev/null ; then
 elif peco -h 2> /dev/null ; then
 	fuzzy=peco
 fi
+
 if [ ! -z $fuzzy ]; then
     if [[ ! -n $TMUX ]] ; then
 	    choices="New session with name\nNew session\nPlain"

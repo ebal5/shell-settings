@@ -21,3 +21,7 @@ ln -s $dir/.latexmkrc $HOME/
 ln -s $dir/pythonstartup.py $pystpos
 ln -s $dir/.gitconfig $gitpos
 ln -s $dir/.texmf $HOME/.texmf
+
+[ ! -d $HOME/bin ] && mkdir $HOME/bin
+ln -s $dir/git-home $HOME/bin
+ln -s $dir/git-cdtop $HOME/bin
