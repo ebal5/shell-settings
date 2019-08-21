@@ -48,15 +48,20 @@ fi
 function gdrive_dl(){
     # $1: url that want to download (only google drive)
     # $2: file name that you want to save to
-    if [[ ! $@ -eq 2 ]]; then
+    if [ ! $# -eq 2 ]; then
         echo "Usage: gdrive_dl drive_url save_file_name"
-        exit 1
+        return 1
     fi
-    if [[ ! $1 -regex-match ^https://drive.google.com/.+ ]]; then
+    if echo $1| grep -vE "^https://drive.google.com/.+" > /dev/null; then
         echo "first arugment must be google drive's url"
-        exit 1
+        return 1
     fi
-    FID=$(echo $1 | sed -E 's/.*id=(.+)[&|$].*/\1/')
+    if echo $1 | grep -E "view$" > /dev/null; then
+        FID=$(echo $1 | sed -E 's|^.+/file/[a-z]/(.+).*/view$|\1|')
+    else
+        FID=$(echo $1 | sed -E 's/^.*id=(.+)[&|$].*/\1/')
+    fi
+
     FN=$2
     cookie=$(mktemp /tmp/cookie.XXXXXX)
     curl -sc $cookie "https://drive.google.com/uc?export=download&id=$FID" > /dev/null
