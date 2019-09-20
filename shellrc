@@ -43,6 +43,7 @@ if git --help > /dev/null; then
     function ghome(){
         git rev-parse --show-toplevel
     }
+    alias cdgh="cd $(ghome)"
 fi
 
 function gdrive_dl(){
@@ -97,6 +98,9 @@ if pipenv --help > /dev/null; then
     eval "$(pipenv --completion)"
 fi
 export XAPIAN_CJK_NGRAM=1
+
+CARGO_ROOT=$HOME/.cargo
+[[ -d $CARGO_ROOT ]] && PATH="$CARGO_ROOT/bin:$PATH"
 
 if which xsv > /dev/null; then
     function csvcp() {
