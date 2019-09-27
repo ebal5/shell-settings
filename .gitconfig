@@ -18,4 +18,4 @@
 	sp = stash pop
 	cof = !"git branch | fzf | xargs git checkout"
 	cor = !"git branch | sed -e 's|origin/||' | xargs git checkout"
-
+	home = rev-parse --show-toplevel
