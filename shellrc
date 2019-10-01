@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 #+STARTUP: shell-script-mode
 
+export LANG=ja_JP.utf-8
+
 DIRNAME="$HOME/bin"
 [[ -d  $DIRNAME ]] && export PATH="${DIRNAME}:${PATH}"
 
@@ -47,8 +49,6 @@ function mcd(){
 
 # load local settings.
 
-[[ -f "$HOME/.config/shellrc.local" ]] && source "$HOME/.config/shellrc.local"
-
 [[ -f "$HOME/.config/pythonstartup.py" ]] && export PYTHONSTARTUP="$HOME/.config/pythonstartup.py"
 
 export XAPIAN_CJK_NGRAM=1
@@ -70,3 +70,4 @@ if [ -x pipenv ]; then
     eval "$(pipenv --completion)"
 fi
 
+[[ -f "$HOME/.config/shellrc.local" ]] && source "$HOME/.config/shellrc.local"
