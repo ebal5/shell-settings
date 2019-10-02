@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 #+STARTUP: shell-script-mode
 
+export LANG=ja_JP.utf-8
+
 DIRNAME="$HOME/bin"
 [[ -d  $DIRNAME ]] && export PATH="${DIRNAME}:${PATH}"
 
@@ -20,13 +22,8 @@ alias md="mkdir"
 alias less="less -F"
 alias len="wc -l"
 
-function speedmeter {
-    cat - |sed -e "s/^.*時間： \(.*:..\).*$/\1 /" -e "s/^.[^0-9]*\([0-9]*[km]bps\).$/\1 /" -e "s/^-*//" -e "/^$/d" | perl -pe "s/\n/ /" |perl -pe "s/$/\n/" | sed -e "s/ \+/ /g"
-}
 
 [[ -d "$HOME/.texmf" ]] && export TEXMFHOME="$HOME/.texmf"
-
-[[ -d "$HOME/.rbenv/bin" ]] && export PATH="$HOME/.rbenv/bin:$PATH"; eval "$(rbenv init -)"
 
 export LESS=-R
 export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
@@ -39,30 +36,12 @@ export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
 # User functions...
 
-if git --help > /dev/null; then
+if [ -x git ]; then
     function ghome(){
         git rev-parse --show-toplevel
     }
+    alias cdgh="cd $(ghome)"
 fi
-
-function gdrive_dl(){
-    # $1: url that want to download (only google drive)
-    # $2: file name that you want to save to
-    if [[ ! $@ -eq 2 ]]; then
-        echo "Usage: gdrive_dl drive_url save_file_name"
-        exit 1
-    fi
-    if [[ ! $1 -regex-match ^https://drive.google.com/.+ ]]; then
-        echo "first arugment must be google drive's url"
-        exit 1
-    fi
-    FID=$(echo $1 | sed -E 's/.*id=(.+)[&|$].*/\1/')
-    FN=$2
-    cookie=$(mktemp /tmp/cookie.XXXXXX)
-    curl -sc $cookie "https://drive.google.com/uc?export=download&id=$FID" > /dev/null
-    CODE="$(awk '/_warning_/ {print $NF}' ${cookie})"
-    curl -Lb $cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=$FID" -o $FN
-}
 
 function mcd(){
     mkdir $1 && cd $1
@@ -70,31 +49,25 @@ function mcd(){
 
 # load local settings.
 
-[[ -f "$HOME/.config/shellrc.local" ]] && source "$HOME/.config/shellrc.local"
-
-virtualenvfile=/usr/local/bin/virtualenvwrapper.sh
-[[ -f $virtuenvfile ]] && \
-    source $virtualenvfile && \
-    export WORKON_HOME=~/.virtualenvs
-
-PYENV_ROOT=$HOME/.pyenv
-[[ -d $PYENV_ROOT ]] && \
-    PATH="$PYENV_ROOT/shims:$PATH"; \
-    PATH="$PYENV_ROOT/bin:$PATH"; \
-    eval "$(pyenv init -)"
-
-
-alias pipmd="env PIPENV_VENV_IN_PROJECT=true pipenv install -d"
-
 [[ -f "$HOME/.config/pythonstartup.py" ]] && export PYTHONSTARTUP="$HOME/.config/pythonstartup.py"
 
-if pipenv --help > /dev/null; then
-    eval "$(pipenv --completion)"
-fi
 export XAPIAN_CJK_NGRAM=1
 
-if which xsv > /dev/null; then
-    function csvcp() {
+CARGO_ROOT=$HOME/.cargo
+[[ -d $CARGO_ROOT ]] && PATH="$CARGO_ROOT/bin:$PATH"
+
+if [ -x xsv ]; then
+    function csvcp(){
         cat $1 | xsv fmt -t "\t" | xsel -b
     }
 fi
+
+[ -x $HOME/.anyenv/bin/anyenv ] &&\
+     export PATH="$HOME/.anyenv/bin:$PATH" &&\
+     eval "$(anyenv init -)"
+if [ -x pipenv ]; then
+    alias pipmd="env PIPENV_VENV_IN_PROJECT=true pipenv install -d"
+    eval "$(pipenv --completion)"
+fi
+
+[[ -f "$HOME/.config/shellrc.local" ]] && source "$HOME/.config/shellrc.local"
