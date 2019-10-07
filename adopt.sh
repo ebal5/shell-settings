@@ -1,46 +1,51 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 commands="fzf ssh git xkeysnail rofi qalc"
 for cmd in $commands; do
-	[ ! -x $cmd ] && uncmd="$cmd, $uncmd"
+    which $cmd > /dev/null || uncmd="$cmd, $uncmd"
 done
 echo Lack commands: $uncmd
 
-zrcpos="$HOME/.zshrc"
-trcpos="$HOME/.tmux.conf"
-srcpos="$HOME/.config/shellrc"
-pystpos="$HOME/.config/pythonstartup.py"
-gitpos="$HOME/.gitconfig"
-texmf="$HOME/.texmf"
-[[ -f $zrcpos ]] && mv $zrcpos ${zrcpos}.orig
-[[ -f $trcpos ]] && mv $trcpos ${trcpos}.orig
-[[ -f $srcpos ]] && mv $srcpos ${srcpos}.orig
-[[ -f $pystpos ]] && mv $pystpos ${pystpos}.orig
-[[ -f $gitpos ]] && mv $gitpos ${gitpos}.orig
-[[ -d $texmf ]] && mv $texmf ${texmf}.orig
+mv=mv
+ln=ln
 
-dir=$(cd $(dirname $0); pwd)
-ln -s $dir/.zshrc $zrcpos
-ln -s $dir/.tmux.conf $trcpos
-ln -s $dir/shellrc $srcpos
-ln -s $dir/.latexmkrc $HOME/
-ln -s $dir/pythonstartup.py $pystpos
-ln -s $dir/.gitconfig $gitpos
-ln -s $dir/.texmf $HOME/.texmf
+pwd=$(cd $(dirname $0); pwd)
+rm -rf $pwd/old
+mkdir -p $pwd/old/.config $pwd/old/bin
 
-[ ! -d $HOME/.config/fish/ ] && mkdir -p $HOME/.config/fish
-ln -s $dir/config.fish $HOME/.config/fish/
-
-[ ! -d $HOME/.mlterm ] && mkdir $HOME/.mlterm
-for f in $(ls mlterm); do
-    ln -s $dir/mlterm/$f $HOME/.mlterm/
+echo making dirs
+for dn in bin .config; do
+    [ ! -d $HOME/$dn ] && mkdir $HOME/$dn
 done
 
-[ ! -d $HOME/.config/i3 ] && mkdri $HOME/.config/i3
-ln -s i3-config  ~/.config/i3/config
+echo create link to directory under config dir
+for dn in $(find $(pwd)/home/.config/ -maxdepth 1 -type d | sed 's|.*home/\.config/||'); do
+    [ -d $HOME/.config/$dn ] && $mv $HOME/.config/$dn $pwd/old/.config
+    $ln -s $pwd/home/.config/$dn $HOME/.config/
+done
 
-[ -d $HOME/bin ] && mv ~/bin ~/bin.old
-ln -s $dir/bin ~/bin
+echo create link to file under config dir
+for fn in $(find $(pwd)/home/.config -maxdepth 1 -type f | sed 's|.*home/\.config/||'); do
+    [ -e $HOME/.config/$fn ] && $mv $HOME/.config/$fn $pwd/old/.config/
+    $ln -s $pwd/home/.config/$fn $HOME/.config/
+done
 
+echo create link to file in bin dir
+for fn in $(find $(pwd)/home/bin -maxdepth 1 -type f | sed 's|.*home/bin/||'); do
+    [ -e $HOME/bin/$fn ] && $mv $HOME/bin/$fn old/bin
+    [ -L $HOME/bin/$fn ] && unlink $HOME/bin/$fn
+    $ln -s $pwd/home/bin/$fn $HOME/bin/
+done
+
+echo create link to file in home dir
+for fn in $(find $(pwd)/home/ -maxdepth 1 -type f | sed 's|.*home/||'); do
+    [ -e $HOME/$fn ] && $mv $HOME/$fn $pwd/old
+    [ -L $HOME/$fn ] && unlink $HOME/$fn
+    $ln -s $pwd/home/$fn $HOME/$fn
+done
+
+echo cloning anyenv...
 [ ! -d $HOME/.anyenv ] && git clone https://github.com/anyenv/anyenv ~/.anyenv
+
+echo all done
 
