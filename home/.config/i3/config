@@ -187,7 +187,6 @@ bar {
 
 exec --no-startup-id ~/bin/xkeysnail.sh
 exec --no-startup-id ~/bin/ssh-agent.sh
-exec --no-startup-id xrandr --output DVI-I-1 --auto --right-of DP-1 --rotate left
 exec --no-startup-id pcloud
 
 bindsym $mod+Shift+e exec --no-startup-id ~/bin/i3-escape.sh
