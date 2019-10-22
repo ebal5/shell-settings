@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #+STARTUP: shell-script-mode
 
-[ ! -z $SHELLRC ] && return 2>&- || exit
+[ ! -z $SHELLRC ] && return 2>&-
 export SHELLRC=TRUE
 export LANG=ja_JP.utf-8
 
