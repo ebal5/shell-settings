@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-if [ -z $SSH_AGENT_PID ]; then
+if ! pgrep ssh-agent > /dev/null; then
     eval $(ssh-agent) > /dev/null
 fi
