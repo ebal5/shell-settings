@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-
+if pgrep xkeysnail > /dev/null; then
+    return 2>&-
+fi
 if [ ! -x /usr/bin/xkeysnail ]; then
-    return 2>&- || exit
+    return 2>&-
 fi
 if ! pgrep xkeysnail > /dev/null; then
     exec >> /tmp/xkeysnail.log 2>&1

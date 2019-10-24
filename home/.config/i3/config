@@ -191,4 +191,3 @@ exec --no-startup-id pcloud
 
 bindsym $mod+Shift+e exec --no-startup-id ~/bin/i3-escape.sh
 bindsym Control+mod1+l exec --no-startup-id i3lock --color 000000
-
