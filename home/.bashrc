@@ -50,7 +50,7 @@ function set_bash(){
 	      fi
     }
 
-    export PS1="\u@\h\W$(parse_git_branch)\n\$"
+    export PS1="\u@\h:\W$(parse_git_branch)\n\$ "
 }
 
 source $HOME/bin/ssh-agent.sh
@@ -65,7 +65,7 @@ if [ -f $HOME/.config/shellrc ]; then
     source $HOME/.config/shellrc
 fi
 
-if which fish >2 /dev/null; then
+if which fish 2> /dev/null; then
     exec fish
 else
     set_bash
