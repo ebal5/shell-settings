@@ -101,15 +101,15 @@ class CrontabParser():
                 print(cmd)
         return cmdls
 
-    def parse_line(self, line:str):
+    def parse_line(self, line: str):
         seps = line.split(" ")
         obj = {
-            "minute" : self.min_psr.parse(seps[0]),
-            "hour" : self.hur_psr.parse(seps[1]),
-            "day" : self.dat_psr.parse(seps[2]),
-            "month" : self.mth_psr.parse(seps[3]),
-            "dOw" : self.dow_psr.parse(seps[4]),
-            "cmd" : " ".join(seps[5:])
+            "minute": self.min_psr.parse(seps[0]),
+            "hour": self.hur_psr.parse(seps[1]),
+            "day": self.dat_psr.parse(seps[2]),
+            "month": self.mth_psr.parse(seps[3]),
+            "dOw": self.dow_psr.parse(seps[4]),
+            "cmd": " ".join(seps[5:])
         }
         if self.debug:
             print(line)
@@ -123,7 +123,7 @@ class CrontabParser():
         day = today.day
         month = today.month
         wday = today.weekday()
-        wday = 0 if  wday == 6 else wday+1
+        wday = 0 if wday == 6 else wday+1
         if not (wday in obj["dOw"] or
                 (day in obj["day"] and month in obj["month"])):
             return []
@@ -140,7 +140,6 @@ def exec_cmds(cmdls):
     import subprocess
     with open(os.path.expanduser('~/at2cron.log'), "a") as logf:
         for cmd in cmdls:
-            print(cmd)
             res = subprocess.Popen(" ".join(cmd),
                                    shell=True,
                                    stdin=subprocess.PIPE,
@@ -171,7 +170,7 @@ def main():
                         action='store_true',
                         default=False,
                         help=('debug mode.'
-                              ' This will print at commands to STDOUT [False]'))
+                              ' will print at commands to STDOUT [False]'))
     args = parser.parse_args()
     crontab = args.crontab
     if not (os.path.exists(crontab) and os.path.isfile(crontab)):
@@ -182,6 +181,7 @@ def main():
     with open(crontab) as cf:
         cmdls = cron_parser.parse(cf, crontab)
         exec_cmds(cmdls)
+
 
 if __name__ == "__main__":
     main()
