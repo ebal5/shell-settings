@@ -24,7 +24,7 @@ class UnitParser():
         self.max = max
 
     def parse(self, target: str):
-        units = [target] if not self.is_list(target) else target.split(",")
+        units = target.split(",")
         if self.debug:
             print(f"parsed units: {units}")
         dists = [self.parse_dist(unit) for unit in units]
@@ -61,12 +61,7 @@ class UnitParser():
 
     def filter_pair(self, pair):
         (lst, dist) = pair
-        if dist == 1:
-            return lst
-        return [lst[x] for x in range(lst[0], lst[-1]+1, dist)]
-
-    def is_list(self, maybe: str):
-        return "," in maybe
+        return [x for x in range(lst[0], lst[-1]+1, dist)]
 
     def is_range(self, maybe: str):
         return "-" in maybe
@@ -85,16 +80,26 @@ class CrontabParser():
         self.dow_psr = UnitParser(min=0, max=7, debug=self.debug)
         # TODO: 曜日だけ特別なパーサ作成するべき？(Sunなどの表記に対応するため)
 
-    def parse(self, stream):
+    def parse(self, stream, filename=None):
+        cmdls = []
         for line in stream.readlines():
             cline = compress_space.sub(" ", line)
             if cline[0] == " ":
                 cline = cline[1:]
             if len(cline) > 0 and (cline[0].isdigit() or cline[0] == "*"):
                 obj = self.parse_line(cline)
-                cmd = self.make_cmdls(obj)
+                cmds = self.make_cmdls(obj)
+                cmdls.extend(cmds)
                 if self.debug:
                     print()
+        if filename:
+            myself = os.path.abspath(__file__)
+            cmdls.append(["echo", "python3", myself, filename, "|",
+                          "at", "0:00 +1 days"])
+        if self.debug:
+            for cmd in cmdls:
+                print(cmd)
+        return cmdls
 
     def parse_line(self, line:str):
         seps = line.split(" ")
@@ -104,7 +109,7 @@ class CrontabParser():
             "day" : self.dat_psr.parse(seps[2]),
             "month" : self.mth_psr.parse(seps[3]),
             "dOw" : self.dow_psr.parse(seps[4]),
-            "cmd" : "".join(seps[5:])
+            "cmd" : " ".join(seps[5:])
         }
         if self.debug:
             print(line)
@@ -126,10 +131,28 @@ class CrontabParser():
             print(f"this command is target")
             pass
         hmps = itertools.product(obj["hour"], obj["minute"])
-        cmdls = [f"echo {obj['cmd']} | at {h}:{m}" for (h, m) in hmps]
-        if self.debug:
-            print(cmdls)
+        cmdls = [["echo", obj['cmd'], "|", "at", f"{h}:{m:02}"]
+                 for (h, m) in hmps]
         return cmdls
+
+
+def exec_cmds(cmdls):
+    import subprocess
+    with open(os.path.expanduser('~/at2cron.log'), "a") as logf:
+        for cmd in cmdls:
+            print(cmd)
+            res = subprocess.Popen(" ".join(cmd),
+                                   shell=True,
+                                   stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+            if res.returncode != 0:
+                print(f"Error: {res.args}", file=logf)
+                print(f"Error: {res.stderr}", file=logf)
+            else:
+                print(f"log: {res.args}")
+                print(f"log: {res.stdout}")
+                print(f"log: {res.stderr}")
 
 
 def main():
@@ -157,7 +180,8 @@ def main():
         pass
     cron_parser = CrontabParser(debug=args.debug)
     with open(crontab) as cf:
-        cron_parser.parse(cf)
+        cmdls = cron_parser.parse(cf, crontab)
+        exec_cmds(cmdls)
 
 if __name__ == "__main__":
     main()
@@ -179,4 +203,6 @@ def test():
     print(testtab)
     stream = io.StringIO(testtab)
     parser = CrontabParser(debug=True)
-    parser.parse(stream)
+    cmdls = parser.parse(stream, "filename")
+    for cmd in cmdls:
+        print(cmd)
