@@ -146,12 +146,14 @@ def exec_cmds(cmdls):
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
             if res.returncode != 0:
+                print(f"Error: $? = {res.returncode}", file=logf)
                 print(f"Error: {res.args}", file=logf)
+                print(f"Error: {res.stdout}", file=logf)
                 print(f"Error: {res.stderr}", file=logf)
             else:
-                print(f"log: {res.args}")
-                print(f"log: {res.stdout}")
-                print(f"log: {res.stderr}")
+                print(f"log: {res.args}", file=logf)
+                print(f"log: {res.stdout}", file=logf)
+                print(f"log: {res.stderr}", file=logf)
 
 
 def main():
