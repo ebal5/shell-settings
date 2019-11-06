@@ -145,6 +145,10 @@ def exec_cmds(cmdls):
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
+            try:
+                res.wait(1)
+            except subprocess.TimeoutExpired as e:
+                print(f"Error: timed out {res.args}", file=logf)
             if res.returncode != 0:
                 print(f"Error: $? = {res.returncode}", file=logf)
                 print(f"Error: {res.args}", file=logf)
