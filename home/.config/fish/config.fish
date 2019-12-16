@@ -1,5 +1,8 @@
 alias g="git"
+alias ls="lsd"
 alias l="ls"
 alias lc="ls --color=always"
+alias lh="ls -lh"
+alias len="wc -l"
 alias cgh="cd (git home)"
-
+alias lg="lazygit"
