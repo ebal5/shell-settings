@@ -2,56 +2,53 @@
 font = monospace 12
 font = dejavu sans 12
 font = Cica Regular 12
+
 [colors]
-foreground = #dcdcc
-background = #3f3f3f
+# Base16 Grayscale Dark
+# Author: Alexandre Gavioli (https://github.com/Alexx2/)
 
-
-# Base16 Woodland
-# Author: Jay Cornwall (https://jcornwall.com)
-
-foreground          = #cabcb1
-foreground_bold     = #d7c8bc
-cursor              = #d7c8bc
-cursor_foreground   = #231e18
-background          = rgba(35, 30, 24)
+foreground          = #b9b9b9
+foreground_bold     = #e3e3e3
+cursor              = #e3e3e3
+cursor_foreground   = #101010
+background          = rgba(16, 16, 16, 0.8)
 
 # 16 color space
 
 # Black, Gray, Silver, White
-color0  = #231e18
-color8  = #9d8b70
-color7  = #cabcb1
-color15 = #e4d4c8
+color0  = #101010
+color8  = #525252
+color7  = #b9b9b9
+color15 = #f7f7f7
 
 # Red
-color1  = #d35c5c
-color9  = #d35c5c
+color1  = #7c7c7c
+color9  = #7c7c7c
 
 # Green
-color2  = #b7ba53
-color10 = #b7ba53
+color2  = #8e8e8e
+color10 = #8e8e8e
 
 # Yellow
-color3  = #e0ac16
-color11 = #e0ac16
+color3  = #a0a0a0
+color11 = #a0a0a0
 
 # Blue
-color4  = #88a4d3
-color12 = #88a4d3
+color4  = #686868
+color12 = #686868
 
 # Purple
-color5  = #bb90e2
-color13 = #bb90e2
+color5  = #747474
+color13 = #747474
 
 # Teal
-color6  = #6eb958
-color14 = #6eb958
+color6  = #868686
+color14 = #868686
 
 # Extra colors
-color16 = #ca7f32
-color17 = #b49368
-color18 = #302b25
-color19 = #48413a
-color20 = #b4a490
-color21 = #d7c8bc
+color16 = #999999
+color17 = #5e5e5e
+color18 = #252525
+color19 = #464646
+color20 = #ababab
+color21 = #e3e3e3
